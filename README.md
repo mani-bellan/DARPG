@@ -8,24 +8,25 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-* Generte your API Key : 
-        * I have explained the process on my blog : https://medium.com/@mani.bellan/introduction-to-gemini-ai-fe16b1bbedfe
-
+* Generte your API Key : I have the details in my blog : https://medium.com/@mani.bellan/introduction-to-gemini-ai-fe16b1bbedfe
 * Update the key in the config.yaml file
 
 
 ### Installing
 
-* Create a python virtual environment and post it is activated, install the libraries. Run the below commands for this
-        * python3 -m venv .venv
-        * source .venv/bin/activate
-        * pip install -r requirements.txt
+Create a python virtual environment and post it is activated, install the libraries. Run the below commands for this
+```python
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
 ## Running the tests
 
 * Once the libraries are installed, test the code by running it on the terminal
-        * streamlit run GrievanceRedressal.py
-
+ ```python
+ streamlit run GrievanceRedressal.py
+```
 * You can pick some sample questions to be asked from ChatQueries.txt
 
 ## Built Using

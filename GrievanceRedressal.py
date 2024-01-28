@@ -3,6 +3,7 @@ import os
 import yaml
 import google.generativeai as genai
 import base64
+import pandas as pd
 
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -109,7 +110,10 @@ def main():
     with st.sidebar:    
         st.sidebar.image("DARPG_Logo.jpg", use_column_width=True)
         "Welcome to DARPG Chatbot"
-
+        # Build df.
+        df = pd.read_csv('Departments.csv')
+        st.selectbox(label='**Select Department**', options=df.Departments,on_change=None,args=None, kwargs=None, placeholder="Choose an option",)
+        st.text_area(label="Instructions",value="If you have specific question about the departmet,use the name of the department in the query box along with the question\nEg. Give me contacts of Central Board of Direct Taxes (Income Tax)", height=150)
 
     if user_question:
         user_input(user_question)
