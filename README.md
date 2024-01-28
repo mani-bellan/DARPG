@@ -8,7 +8,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-* Generte your API Key : I have explained the process on my blog : https://medium.com/@mani.bellan/introduction-to-gemini-ai-fe16b1bbedfe
+* Generte your API Key : I have the details in my blog : https://medium.com/@mani.bellan/introduction-to-gemini-ai-fe16b1bbedfe
 * Update the key in the config.yaml file
 
 
