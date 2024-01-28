@@ -9,4 +9,5 @@ faiss-cpu
 langchain_google_genai
 python-dotenv
 langchain-community
+pandas
 
