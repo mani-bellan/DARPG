@@ -38,7 +38,7 @@ streamlit run GrievanceRedressal.py
 
 * **Manikandan Bellan** - *Team Lead*  - [Mani Bellan](https://github.com/mani-bellan/)
 * **Anita Agrawal**  - *Developer*
-* **Agni Srinivasan** Devops and Documentation* - [Agni](https://github.com/agnisrini/agnisrini)
+* **Agni Srinivasan** *Devops and Documentation* - [Agni](https://github.com/agnisrini/agnisrini)
 
 ## Acknowledgments
 

@@ -41,8 +41,9 @@ class grievanceRedressal:
         with self.st_1.sidebar:    
 
            self.st_1.sidebar.image("resources/DARPG_Logo.jpg", use_column_width=True)
-           "Welcome to DARPG Chatbot"
-           self.st_1.text_area(label="Instructions",value="1. This chatbot can answer your questions related Public Grievance\n2. If you know the department, select it from the dropdown and ask questions related to the department\n3. If you do not know, leave the department as All and you can ask any general queries about Grievance redressal process", height=150)
+           "**Welcome to DARPG Chatbot**"
+           self.st_1.text_area(label="**Instructions**",value="1. This chatbot can answer your questions related Public Grievance\n2. If you know the department, select it from the dropdown and ask questions related to the department\n3. If you do not know, leave the department as All and you can ask any general queries about Grievance redressal process", height=130)
+           self.st_1.text_area(label="**Note**",value="The list of ministry/department is provided and when selected will help you with the categories and subcategories of complaints you can raise under the respective ministry/department.\nThis is for informatonal purpose to help you select the righ category/subcategory", height=135)
     
     def initialize_ui_categories(self):
         df = pd.read_csv('data/Complaint_Category.csv')
@@ -57,10 +58,10 @@ class grievanceRedressal:
         # Filter the dataframe based on the selected category
         filtered_df = required_df[required_df['ParentCategory'] == selected_category]
         selected_org_code=filtered_df["OrgCode"].unique()[0]
-        print(selected_org_code)
+        #print(selected_org_code)
         self.department=selected_category
-        selected_sub_category=self.st_1.selectbox("Select SubDepartment/Ministry", filtered_df['Category'].unique())
-        print(selected_sub_category)
+        selected_sub_category=self.st_1.selectbox("Complaint categories under "+self.department, filtered_df['Category'].unique())
+        #print(selected_sub_category)
         sub_category_df=required_df[(required_df['ParentCategory']==selected_sub_category) &(required_df["Category"]!=selected_sub_category) & (required_df["OrgCode"]==selected_org_code)]
         sub_category_df=sub_category_df[["Category","ParentCategory"]]
         
@@ -69,7 +70,7 @@ class grievanceRedressal:
     
     
         grid_options = GridOptionsBuilder.from_dataframe(sub_category_df).build()
-        AgGrid(sub_category_df, gridOptions=grid_options, data_editor=dependent_dropdown_options)
+        AgGrid(sub_category_df, gridOptions=grid_options, data_editor=dependent_dropdown_options, height=150,fit_columns_on_grid_load=True )
 
     def get_input_query(self):
         user_question = self.st_1.text_input("**How can I help you today?**")
@@ -97,9 +98,9 @@ class grievanceRedressal:
         return output["text"]
 
     def process(self):
-        if self.st_1.button("Process"):
+        if self.st_1.button("Retreive Information"):
 
-            with self.st_1.spinner("Processing..."):
+            with self.st_1.spinner("Retrieving Information..."):
                self.st_1.write(self.return_out())
     
 
