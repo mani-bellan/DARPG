@@ -10,4 +10,5 @@ langchain_google_genai
 python-dotenv
 langchain-community
 pandas
-
+langchain_openai
+streamlit-aggrid

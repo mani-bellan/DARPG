@@ -1,130 +1,121 @@
-import streamlit as st
 import os
 import yaml
 import google.generativeai as genai
 import base64
 import pandas as pd
 
-from PyPDF2 import PdfReader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain.vectorstores import FAISS
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+from langchain_community.llms import OpenAI 
+from langchain_openai import OpenAI
+import streamlit as st
 
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
+from st_aggrid import AgGrid, GridOptionsBuilder
 
+def initialize_ai_env():
+    with open("config/config.yaml", "r") as f:
+        config = yaml.full_load(f)
+        apikey = config['gemini']['api_key']
+        os.environ['GOOGLE_API_KEY'] = apikey
+        genai.configure(api_key = os.environ['GOOGLE_API_KEY'])
 
-#Configure your API Key
-with open("config.yaml", "r") as f:
-    config = yaml.full_load(f)
-
-apikey = config['gemini']['api_key']
-
-os.environ['GOOGLE_API_KEY'] = apikey
-genai.configure(api_key = os.environ['GOOGLE_API_KEY'])
-
-# Generate text from PDF Files
-def get_pdf_text():
-    text=""
-    for pdf in os.listdir("./data"):
-        pdf_reader= PdfReader(pdf)
-        for page in pdf_reader.pages:
-            text+= page.extract_text()
-    return  text
-
-# Generate texts chunks from the text created out of PDF Files
-def get_text_chunks(text):
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=1000)
-    chunks = text_splitter.split_text(text)
-    return chunks
-
-# Use Facebook AI Similarity Search(FAISS) and create a local vector store called faiss_index
-def get_vector_store(text_chunks):
-    embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
-    vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
-    vector_store.save_local("faiss_index")
-
-# Geneerate the lang chain 
-def get_conversational_chain():
-
-    prompt_template = """
-    Answer the question as detailed as possible from the provided context, make sure to provide all the details\n\n
-    Context:\n {context}?\n
-    Question: \n{question}\n
-
-    Answer:
-    """
-
-    model = ChatGoogleGenerativeAI(model="gemini-pro",temperature=0.3)
-    prompt = PromptTemplate(template = prompt_template, input_variables = ["context", "question"])
-    chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
-
-    return chain
-
-
-# Get the user question as the input and generae the response
-def user_input(user_question):
-    embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
+class grievanceRedressal:
+    def __init__(self,st_obj,inp_query,department):
+        self.st_1=st_obj
+        self.inp_query=''
+        self.department=''
     
-    new_db = FAISS.load_local("faiss_index", embeddings)
-    docs = new_db.similarity_search(user_question)
+    def add_bg_from_local(self,image_file):
 
-    chain = get_conversational_chain()
+        with open(image_file, "rb") as image_file:
+            
+           encoded_string = base64.b64encode(image_file.read())
+           st.markdown(f"""<style>.stApp {{background-image: url(data:image/{"png"};base64,{encoded_string.decode()});background-size: cover}}</style>""",unsafe_allow_html=True)
 
+    def initialize_ui_sidebar(self):
+        with self.st_1.sidebar:    
+
+           self.st_1.sidebar.image("resources/DARPG_Logo.jpg", use_column_width=True)
+           "Welcome to DARPG Chatbot"
+           self.st_1.text_area(label="Instructions",value="1. This chatbot can answer your questions related Public Grievance\n2. If you know the department, select it from the dropdown and ask questions related to the department\n3. If you do not know, leave the department as All and you can ask any general queries about Grievance redressal process", height=150)
     
-    response = chain(
-        {"input_documents":docs, "question": user_question}
-        , return_only_outputs=True)
+    def initialize_ui_categories(self):
+        df = pd.read_csv('data/Complaint_Category.csv')
+        print(df.columns)
+        required_df = df[["Category","ParentCategory","OrgCode"]].sort_values(by=['Category'])
+        print(required_df.columns)
+        required_df_1=required_df[required_df['ParentCategory'].isna()].sort_values(by=['Category'])
 
-    #print(response)
-    st.write("Reply: ", response["output_text"])
+        # Create the primary dropdown for Category and selected value is assigned to var
+        selected_category = self.st_1.selectbox("Select Department/Ministry for your Queries", required_df_1['Category'].unique())
+        
+        # Filter the dataframe based on the selected category
+        filtered_df = required_df[required_df['ParentCategory'] == selected_category]
+        selected_org_code=filtered_df["OrgCode"].unique()[0]
+        print(selected_org_code)
+        self.department=selected_category
+        selected_sub_category=self.st_1.selectbox("Select SubDepartment/Ministry", filtered_df['Category'].unique())
+        print(selected_sub_category)
+        sub_category_df=required_df[(required_df['ParentCategory']==selected_sub_category) &(required_df["Category"]!=selected_sub_category) & (required_df["OrgCode"]==selected_org_code)]
+        sub_category_df=sub_category_df[["Category","ParentCategory"]]
+        
+        # Create a dictionary for dependent dropdown options
+        dependent_dropdown_options = {'options': sub_category_df['Category'].unique().tolist(),'default': 'Others'  }
+    
+    
+        grid_options = GridOptionsBuilder.from_dataframe(sub_category_df).build()
+        AgGrid(sub_category_df, gridOptions=grid_options, data_editor=dependent_dropdown_options)
 
-# Add background image to the page
-def add_bg_from_local(image_file):
-    with open(image_file, "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read())
-    st.markdown(
-    f"""
-    <style>
-    .stApp {{
-        background-image: url(data:image/{"png"};base64,{encoded_string.decode()});
-        background-size: cover
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True
-    )
+    def get_input_query(self):
+        user_question = self.st_1.text_input("**How can I help you today?**")
+        
+        self.inp_query=user_question
 
+    def initialize_ui(self):
+        self.st_1.set_page_config("DARPG Chatbot")
+        self.st_1.header("Dept of Adminstrative Reforms & Public Grievances Chatbot")
+        self.add_bg_from_local('resources/flag.png') 
+        self.initialize_ui_categories()
+        self.initialize_ui_sidebar()
+    def return_out(self):   
+
+        if self.department !='All':
+            prompt = PromptTemplate(input_variables=["concept"], template="Answer to the ask {concept} from "+self.department+" Department")
+        else:
+            prompt = PromptTemplate(input_variables=["concept"], template="Answer the {concept} from all DARPG Department")
+     
+    
+        llm = ChatGoogleGenerativeAI(model="gemini-pro",temperature=0.0)
+        chain = LLMChain(llm=llm, prompt=prompt)
+    
+        output = chain.invoke(self.inp_query)
+        return output["text"]
+
+    def process(self):
+        if self.st_1.button("Process"):
+
+            with self.st_1.spinner("Processing..."):
+               self.st_1.write(self.return_out())
+    
+
+        
+        
 
 def main():
-
-    st.set_page_config("Chat PDF")
-    st.header("Dept of Adminstrative Reforms & Public Grievances Chatbot")
-
-    user_question = st.text_input("How can I help you today?")
-
-    add_bg_from_local('flag.png') 
-
-    with st.sidebar:    
-        st.sidebar.image("DARPG_Logo.jpg", use_column_width=True)
-        "Welcome to DARPG Chatbot"
-        # Build df.
-        df = pd.read_csv('Departments.csv')
-        st.selectbox(label='**Select Department**', options=df.Departments,on_change=None,args=None, kwargs=None, placeholder="Choose an option",)
-        st.text_area(label="Instructions",value="If you have specific question about the departmet,use the name of the department in the query box along with the question\nEg. Give me contacts of Central Board of Direct Taxes (Income Tax)", height=150)
-
-    if user_question:
-        user_input(user_question)
-
-    if st.button("Process"):
-        with st.spinner("Processing..."):
-            raw_text = get_pdf_text()
-            text_chunks = get_text_chunks(raw_text)
-            get_vector_store(text_chunks)
-            st.success("Done")
+    initialize_ai_env()
+    grievanceRedressal_obj=grievanceRedressal(st,'','')
+    grievanceRedressal_obj.initialize_ui()
+    grievanceRedressal_obj.get_input_query()
+    grievanceRedressal_obj.process()
+    
 
 
-if __name__ == "__main__":
+if __name__=="__main__":
     main()
+    
+        

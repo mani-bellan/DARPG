@@ -5,3 +5,4 @@ venv/
 .faiss
 .pkl
 config.yaml
+config/config.yaml
