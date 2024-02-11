@@ -24,6 +24,8 @@ class grievanceRedressal:
         self.st_1=st_obj
         self.inp_query=''
         self.department=''
+        self.llm_resp=''
+        self.chat_history=''
     
     def add_bg_from_local(self,image_file):
 
@@ -42,14 +44,14 @@ class grievanceRedressal:
     
     def initialize_ui_categories(self):
         df = pd.read_csv('data/Complaint_Category.csv')
-        print(df.columns)
+        #print(df.columns)
         required_df = df[["Category","ParentCategory","OrgCode"]].sort_values(by=['Category'])
         new_row=["All",np.nan,"ALL"]
         required_df.loc[len(required_df)]=new_row
         new_row1=["All","All","ALL"]
         required_df.loc[len(required_df)]=new_row1
         required_df_1=required_df[required_df['ParentCategory'].isna()].sort_values(by=['Category'])
-        print(required_df_1)
+        #print(required_df_1)
 
         # Create the primary dropdown for Category and selected value is assigned to var
         selected_category = self.st_1.selectbox("Select Department/Ministry for your Queries", required_df_1['Category'].unique())
@@ -92,18 +94,37 @@ class grievanceRedressal:
     
         llm = ChatGoogleGenerativeAI(model="gemini-pro",temperature=0.0)
         chain = LLMChain(llm=llm, prompt=prompt)
-    
-        output = chain.invoke(self.inp_query)
+
+        #concatenate history
+        self.chat_history +="You:"
+        self.chat_history +=self.inp_query
+        if 'chat_history' not in st.session_state:
+            st.session_state['chat_history'] = []
+        st.session_state['chat_history'].append(("You", self.inp_query))
+
+
+        #output = chain.invoke(self.inp_query)
+        print(self.chat_history)
+        output = chain.invoke(self.chat_history)
+        
+        #capture response in history text
+        self.chat_history +="Bot:"
+        self.chat_history +=output["text"]
+        print(self.chat_history)
+
         return output["text"]
 
     def process(self):
         if self.st_1.button("Retreive Information"):
 
             with self.st_1.spinner("Retrieving Information..."):
-               self.st_1.write(self.return_out())
-    
+                llm_resp = self.return_out()
+                st.session_state['chat_history'].append(("Bot", llm_resp))
+                self.st_1.write(llm_resp)
 
-        
+                st.subheader("The Chat History is")
+                for role, text in st.session_state['chat_history']:
+                    st.write(f"{role}: {text}") 
         
 
 def main():
