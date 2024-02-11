@@ -9,7 +9,10 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 * Generate your API Key : I have the details in my blog : https://medium.com/@mani.bellan/introduction-to-gemini-ai-fe16b1bbedfe
-* Update the key in the config.yaml file within config folder. 
+* Create a config folder and ceate a config.yaml file config folder with the key details.Content of the file :
+    ```gemini:
+        api_key : "Your Gemini API Key Here"
+    ```    
 * Note - This is assigned per user and should not be shared publicly.
 
 
@@ -48,10 +51,8 @@ streamlit run GrievanceRedressal.py
 ## Authors
 
 * **Manikandan Bellan** - *Team Lead*  - [Mani Bellan](https://github.com/mani-bellan/)
-* **Anita Agrawal**  - *Developer*
-* **Agni Srinivasan** *Devops and Documentation* - [Agni](https://github.com/agnisrini/agnisrini)
+* **Anita Agrawal**  - *Developer* - [Anita](https://github.com/jagnanianita05)
+* **Agni Srinivasan** *Developer,Devops and Documentation* - [Agni](https://github.com/agnisrini/agnisrini)
 
-## Acknowledgments
 
-* https://github.com/krishnaik06 for his video on building chatbot on PDFs using Gemini AI
 
