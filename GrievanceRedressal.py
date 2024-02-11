@@ -65,12 +65,11 @@ class grievanceRedressal:
         sub_category_df=required_df[(required_df['ParentCategory']==selected_sub_category) &(required_df["Category"]!=selected_sub_category) & (required_df["OrgCode"]==selected_org_code)]
         sub_category_df=sub_category_df[["Category","ParentCategory"]]
         
-        # Create a dictionary for dependent dropdown options
-        dependent_dropdown_options = {'options': sub_category_df['Category'].unique().tolist(),'default': 'Others'  }
-    
-    
-        grid_options = GridOptionsBuilder.from_dataframe(sub_category_df).build()
-        AgGrid(sub_category_df, gridOptions=grid_options, data_editor=dependent_dropdown_options, height=150,fit_columns_on_grid_load=True )
+        if self.department !='All':
+            # Create a dictionary for dependent dropdown options
+            dependent_dropdown_options = {'options': sub_category_df['Category'].unique().tolist(),'default': 'Others'  }
+            grid_options = GridOptionsBuilder.from_dataframe(sub_category_df).build()
+            AgGrid(sub_category_df, gridOptions=grid_options, data_editor=dependent_dropdown_options, height=150,fit_columns_on_grid_load=True )
 
     def get_input_query(self):
         user_question = self.st_obj.text_input("**How can I help you today?**")
@@ -95,11 +94,11 @@ class grievanceRedressal:
         chain = LLMChain(llm=llm, prompt=prompt)
 
         #concatenate history
-        self.chat_history +="You:"
+        self.chat_history +="**You asked :**"
         self.chat_history +=self.inp_query
         if 'chat_history' not in st.session_state:
             st.session_state['chat_history'] = []
-        st.session_state['chat_history'].append(("You", self.inp_query))
+        st.session_state['chat_history'].append(("**You asked**", self.inp_query))
 
 
         #output = chain.invoke(self.inp_query)
@@ -107,7 +106,7 @@ class grievanceRedressal:
         output = chain.invoke(self.chat_history)
         
         #capture response in history text
-        self.chat_history +="Bot:"
+        self.chat_history +="**Bot answered:**"
         self.chat_history +=output["text"]
         print(self.chat_history)
 
@@ -118,7 +117,7 @@ class grievanceRedressal:
 
             with self.st_obj.spinner("Retrieving Information..."):
                 llm_resp = self.return_out()
-                self.st_obj.session_state['chat_history'].append(("Bot", llm_resp))
+                self.st_obj.session_state['chat_history'].append(("**Bot asnwered**", llm_resp))
                 self.st_obj.write(llm_resp)
 
                 self.st_obj.subheader("The Chat History is")
