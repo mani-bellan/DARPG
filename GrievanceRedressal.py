@@ -3,18 +3,13 @@ import yaml
 import google.generativeai as genai
 import base64
 import pandas as pd
-
+import numpy as np
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain_community.llms import OpenAI 
-from langchain_openai import OpenAI
 import streamlit as st
-
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
-from dotenv import load_dotenv
 from st_aggrid import AgGrid, GridOptionsBuilder
 
 def initialize_ai_env():
@@ -42,15 +37,19 @@ class grievanceRedressal:
 
            self.st_1.sidebar.image("resources/DARPG_Logo.jpg", use_column_width=True)
            "**Welcome to DARPG Chatbot**"
-           self.st_1.text_area(label="**Instructions**",value="1. This chatbot can answer your questions related Public Grievance\n2. If you know the department, select it from the dropdown and ask questions related to the department\n3. If you do not know, leave the department as All and you can ask any general queries about Grievance redressal process", height=130)
+           self.st_1.text_area(label="**Instructions**",value="1. This chatbot can answer your questions related Public Grievance\n2. If you know the department, select it from the dropdown and ask questions related to the department\n3. If you do not know, leave the department as it is and you can ask any general queries about Grievance redressal process", height=130)
            self.st_1.text_area(label="**Note**",value="The list of ministry/department is provided and when selected will help you with the categories and subcategories of complaints you can raise under the respective ministry/department.\nThis is for informatonal purpose to help you select the righ category/subcategory", height=135)
     
     def initialize_ui_categories(self):
         df = pd.read_csv('data/Complaint_Category.csv')
         print(df.columns)
         required_df = df[["Category","ParentCategory","OrgCode"]].sort_values(by=['Category'])
-        print(required_df.columns)
+        new_row=["All",np.nan,"ALL"]
+        required_df.loc[len(required_df)]=new_row
+        new_row1=["All","All","ALL"]
+        required_df.loc[len(required_df)]=new_row1
         required_df_1=required_df[required_df['ParentCategory'].isna()].sort_values(by=['Category'])
+        print(required_df_1)
 
         # Create the primary dropdown for Category and selected value is assigned to var
         selected_category = self.st_1.selectbox("Select Department/Ministry for your Queries", required_df_1['Category'].unique())
@@ -118,5 +117,3 @@ def main():
 
 if __name__=="__main__":
     main()
-    
-        
