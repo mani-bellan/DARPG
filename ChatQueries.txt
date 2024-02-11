@@ -1,9 +1,15 @@
-Can you explain the step by step process of grievances redressal
-How long does a redressal process take to complete
-How do i know what is happening to my grievance request
-Where can i lodge a grievance
-What is the grievance redressal website
-What is the department incharge for Grievances
-Can we re-open closed grievances
-Central Board of Indirect Taxes and Customs address
-Can you provide the contact person and designation for Indirect Taxes
+Generic Questions :
+1. Can you explain the step by step process of grievances redressal
+2. How long does a redressal process take to complete
+3. How do i know what is happening to my grievance request
+4. Where can i lodge a grievance
+5. What is the grievance redressal website
+6. What is the department incharge for Grievances
+7. Can we re-open closed grievances
+8. Central Board of Indirect Taxes and Customs address
+9. Can you provide the contact person and designation for Indirect Taxes
+
+After you select a department from the dropdown :
+1. What does this department deal with
+2. How can I raise a public grievance for this department
+3. Who is the public nodal grievance officer for this department
