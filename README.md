@@ -41,6 +41,10 @@ streamlit run GrievanceRedressal.py
 * CategoryCode_Mapping_V2.xlsx provided by NDSAP as a part of DARPG Hackathon 2024.
 * Gemini LLM Model
 
+## Approach
+* We have utilised the Department Categories to streamline queries and prepare prompt templates.
+* Gemini Pro LLM model leverages the prompt template and the user input questions (and chained responses) to answer queries.
+
 ## Authors
 
 * **Manikandan Bellan** - *Team Lead*  - [Mani Bellan](https://github.com/mani-bellan/)
