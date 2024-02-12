@@ -9,7 +9,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 * Generate your API Key : I have the details in my blog : https://medium.com/@mani.bellan/introduction-to-gemini-ai-fe16b1bbedfe
-* Create a config folder and ceate a config.yaml file config folder with the key details. Content of the file :
+* Create a config folder and create a config.yaml file config folder with the key details. Content of the file :
     ```
     gemini:
         api_key : "Your Gemini API Key Here"
