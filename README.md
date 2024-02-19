@@ -52,6 +52,9 @@ streamlit run GrievanceRedressal.py
 ## Demo
 * https://youtu.be/DS_D4ojOWIY
 
+## Presentation
+* DARPG_Hackathon_Presentation.pdf available in the repository
+
 ## Authors
 
 * **Manikandan Bellan** - *Team Lead*  - [Mani Bellan](https://github.com/mani-bellan/)

@@ -6,3 +6,4 @@ venv/
 .pkl
 config.yaml
 config/config.yaml
+.vscode/
